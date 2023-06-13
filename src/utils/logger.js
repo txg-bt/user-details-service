@@ -10,7 +10,7 @@ function logger({ route, statusCode, message, userId }) {
         statusCode,
         message,
         userId,
-        appName: "products-service",
+        appName: "user-details-service",
         timestamp: new Date().getTime(),
       },
       {

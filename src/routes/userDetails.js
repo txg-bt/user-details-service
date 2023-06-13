@@ -3,6 +3,33 @@ const router = require("express").Router();
 const { logger } = require("../utils/logger");
 const authorization = require("../utils/authValidator");
 
+router.post("/bulk", async (req, res) => {
+  try {
+    const { user_ids } = req.body;
+
+    const result = await pool.query(
+      "SELECT * FROM users WHERE user_id = ANY($1::text[])",
+      [user_ids]
+    );
+
+    logger({
+      route: "/userDetails/bulk",
+      statusCode: 200,
+      message: "User details listed",
+    });
+
+    return res.status(200).json(result.rows);
+  } catch (err) {
+    logger({
+      route: "/userDetails/bulk",
+      statusCode: 500,
+      message: "Internal server error",
+    });
+
+    return res.status(500).send("Internal server error");
+  }
+});
+
 router.get("/:user_id", async (req, res) => {
   const { user_id } = req.params;
 

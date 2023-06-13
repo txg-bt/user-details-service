@@ -34,7 +34,7 @@ router.get("/", authorization, async (req, res) => {
   }
 });
 
-router.get("products", authorization, async (req, res) => {
+router.post("/products", authorization, async (req, res) => {
   const { user_id } = req;
   const { product_ids } = req.body;
 
