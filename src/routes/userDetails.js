@@ -8,7 +8,7 @@ router.post("/bulk", async (req, res) => {
     const { user_ids } = req.body;
 
     const result = await pool.query(
-      "SELECT * FROM users WHERE user_id = ANY($1::text[])",
+      "SELECT * FROM user_details WHERE user_id = ANY($1)",
       [user_ids]
     );
 
@@ -23,10 +23,10 @@ router.post("/bulk", async (req, res) => {
     logger({
       route: "/userDetails/bulk",
       statusCode: 500,
-      message: "Internal server error",
+      message: err.message,
     });
 
-    return res.status(500).send("Internal server error");
+    return res.status(500).send(err.message);
   }
 });
 
@@ -34,9 +34,10 @@ router.get("/:user_id", async (req, res) => {
   const { user_id } = req.params;
 
   try {
-    const result = await pool.query("SELECT * FROM users WHERE user_id = $1", [
-      user_id,
-    ]);
+    const result = await pool.query(
+      "SELECT * FROM user_details WHERE user_id = $1",
+      [user_id]
+    );
 
     logger({
       route: "/userDetails",
@@ -64,7 +65,7 @@ router.post("/", authorization, async (req, res) => {
 
   try {
     await pool.query(
-      "INSERT INTO users (user_id, first_name, last_name, email, phone_number, username) VALUES ($1, $2, $3, $4, $5, $6)",
+      "INSERT INTO user_details (user_id, first_name, last_name, email, phone_number, username) VALUES ($1, $2, $3, $4, $5, $6)",
       [user_id, first_name, last_name, email, phone_number, username]
     );
 
@@ -107,7 +108,7 @@ router.put("/:user_id", authorization, async (req, res) => {
   try {
     // default values
     const existingUser = await pool.query(
-      "SELECT * FROM users WHERE user_id = $1",
+      "SELECT * FROM user_details WHERE user_id = $1",
       [user_id]
     );
 
@@ -131,7 +132,7 @@ router.put("/:user_id", authorization, async (req, res) => {
     } = existingUser.rows[0];
 
     await pool.query(
-      "UPDATE users SET first_name = $1, last_name = $2, email = $3, phone_number = $4, username = $5 WHERE user_id = $6",
+      "UPDATE user_details SET first_name = $1, last_name = $2, email = $3, phone_number = $4, username = $5 WHERE user_id = $6",
       [
         first_name || first_nameDefault,
         last_name || last_nameDefault,
@@ -167,7 +168,7 @@ router.delete("/:user_id", authorization, async (req, res) => {
 
   try {
     const existingUser = await pool.query(
-      "SELECT * FROM users WHERE user_id = $1",
+      "SELECT * FROM user_details WHERE user_id = $1",
       [user_id]
     );
 
@@ -182,7 +183,7 @@ router.delete("/:user_id", authorization, async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    await pool.query("DELETE FROM users WHERE user_id = $1", [user_id]);
+    await pool.query("DELETE FROM user_details WHERE user_id = $1", [user_id]);
 
     logger({
       route: "/userDetails",

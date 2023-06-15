@@ -5,11 +5,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE user_details (
     id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id uuid NOT NULL,
-    first_name varchar(255) NOT NULL,
-    last_name varchar(255) NOT NULL,
+    first_name varchar(255) ,
+    last_name varchar(255),
     username varchar(255) NOT NULL,
     email varchar(255) NOT NULL,
-    phone varchar(255) NOT NULL,
+    phone varchar(255),
     created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
